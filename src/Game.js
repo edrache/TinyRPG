@@ -8,7 +8,7 @@ export default class Game {
         this.width = canvas.width;
         this.height = canvas.height;
 
-        this.tileSize = 100;
+        this.tileSize = 20;
         // Calculate grid size based on canvas size
         const gridWidth = Math.floor(this.width / this.tileSize);
         const gridHeight = Math.floor(this.height / this.tileSize);
@@ -149,7 +149,8 @@ export default class Game {
             'ruins': '#332a3a',     // Dark Purple
             'wall': '#1a1a1a',      // Almost Black
             'walkable': '#2a4a4a',  // Dark Teal
-            'impassable': '#4a1a1a' // Dark Red
+            'impassable': '#4a1a1a', // Dark Red
+            'border': '#000000'     // Pure Black
         };
 
         if (colorMap[tag]) {

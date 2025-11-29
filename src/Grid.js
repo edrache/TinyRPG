@@ -1,4 +1,5 @@
 import Tile from './Tile.js';
+import Perlin from './Perlin.js';
 
 export default class Grid {
     constructor(width, height, tileSize) {
@@ -12,54 +13,66 @@ export default class Grid {
 
     generateMap() {
         this.tiles = [];
+        const perlin = new Perlin();
+        const scale = 0.1; // Controls the "zoom" of the noise
 
-        // Initialize with plains
+        // Random offsets to sample different parts of the noise space
+        const xOffset = Math.random() * 10000;
+        const yOffset = Math.random() * 10000;
+        const moistureOffset = 5000; // Relative offset for moisture map
+
         for (let y = 0; y < this.height; y++) {
             const row = [];
             for (let x = 0; x < this.width; x++) {
-                row.push(new Tile(x, y, 'plains'));
-            }
-            this.tiles.push(row);
-        }
+                // Generate Elevation and Moisture values (normalized to 0-1 roughly)
+                // Perlin noise returns -1 to 1, so we map it to 0-1
+                let elevation = (perlin.noise((x * scale) + xOffset, (y * scale) + yOffset) + 1) / 2;
+                let moisture = (perlin.noise((x * scale) + xOffset + moistureOffset, (y * scale) + yOffset + moistureOffset) + 1) / 2;
 
-        // Generate clusters for other terrains
-        const terrainTypes = ['forest', 'mountain', 'river', 'village', 'swamp', 'desert', 'hills', 'lake', 'ruins'];
+                // Add some randomness/noise to edges
+                elevation += (Math.random() * 0.1 - 0.05);
+                moisture += (Math.random() * 0.1 - 0.05);
 
-        terrainTypes.forEach(type => {
-            this.generateCluster(type);
-        });
+                // Determine Terrain Type
+                let type = 'plains';
 
-        // Ensure borders are mountains (impassable)
-        for (let x = 0; x < this.width; x++) {
-            this.tiles[0][x] = new Tile(x, 0, 'mountain');
-            this.tiles[this.height - 1][x] = new Tile(x, this.height - 1, 'mountain');
-        }
-        for (let y = 0; y < this.height; y++) {
-            this.tiles[y][0] = new Tile(0, y, 'mountain');
-            this.tiles[y][this.width - 1] = new Tile(this.width - 1, y, 'mountain');
-        }
-    }
-
-    generateCluster(type) {
-        // Random center
-        const centerX = Math.floor(Math.random() * (this.width - 2)) + 1;
-        const centerY = Math.floor(Math.random() * (this.height - 2)) + 1;
-
-        // Random size
-        const size = Math.floor(Math.random() * 5) + 3; // 3 to 7
-
-        for (let y = centerY - size; y <= centerY + size; y++) {
-            for (let x = centerX - size; x <= centerX + size; x++) {
-                if (x > 0 && x < this.width - 1 && y > 0 && y < this.height - 1) {
-                    const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                    if (distance < size) {
-                        // Add some noise/randomness to edges
-                        if (Math.random() > 0.2) {
-                            this.tiles[y][x] = new Tile(x, y, type);
-                        }
+                if (elevation < 0.35) {
+                    // Low Elevation (Water/Swamp)
+                    if (moisture > 0.6) {
+                        type = 'lake';
+                    } else {
+                        type = 'swamp';
+                    }
+                } else if (elevation < 0.7) {
+                    // Medium Elevation (Flatlands)
+                    if (moisture < 0.3) {
+                        type = 'desert';
+                    } else if (moisture < 0.7) {
+                        type = 'plains';
+                        // Chance for village in plains
+                        if (Math.random() < 0.02) type = 'village';
+                    } else {
+                        type = 'forest';
+                    }
+                } else {
+                    // High Elevation (Hills/Mountains)
+                    if (moisture < 0.4) {
+                        type = 'hills';
+                        // Chance for ruins in hills
+                        if (Math.random() < 0.05) type = 'ruins';
+                    } else {
+                        type = 'mountain';
                     }
                 }
+
+                // Force borders to be 'border' type
+                if (x === 0 || x === this.width - 1 || y === 0 || y === this.height - 1) {
+                    type = 'border';
+                }
+
+                row.push(new Tile(x, y, type));
             }
+            this.tiles.push(row);
         }
     }
 
