@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple 2D RPG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+        <div id="ui-panel">
+            <div id="tile-info">
+                <h3>Current Tile</h3>
+                <p id="tile-tags">Tags: None</p>
+            </div>
+            <div id="player-stats">
+                <h3>Player Stats</h3>
+                <ul id="stats-list">
+                    <!-- Stats will be populated here -->
+                </ul>
+            </div>
+            <div id="controls-info">
+                <p>Use Arrow Keys or WASD to move.</p>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="src/main.js"></script>
+</body>
+
+</html>

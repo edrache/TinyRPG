@@ -1,0 +1,46 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#game-container {
+    display: flex;
+    gap: 20px;
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+canvas {
+    background-color: #000;
+    border: 1px solid #555;
+    image-rendering: auto;
+    /* Allow smoothing */
+}
+
+#ui-panel {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#tile-info {
+    background-color: #444;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #666;
+    padding-bottom: 5px;
+}
