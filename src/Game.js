@@ -50,6 +50,7 @@ export default class Game {
         this.uiTags = document.getElementById('tile-tags');
         this.cardDisplay = document.getElementById('card-display');
         this.cardType = document.getElementById('card-type');
+        this.cardImage = document.getElementById('card-image');
         this.cardText = document.getElementById('card-text');
         this.cardsRemaining = document.getElementById('cards-remaining');
 
@@ -156,6 +157,19 @@ export default class Game {
         if (this.cardDisplay) {
             this.cardType.textContent = card.type;
             this.cardText.textContent = card.text;
+
+            const cardTitle = document.getElementById('card-title');
+            if (cardTitle) {
+                cardTitle.textContent = card.title || 'Unknown';
+            }
+
+            if (card.image) {
+                this.cardImage.src = card.image;
+                this.cardImage.classList.remove('hidden');
+            } else {
+                this.cardImage.classList.add('hidden');
+            }
+
             this.cardsRemaining.textContent = `Cards left: ${this.cardManager.getCardsRemaining(card.type)}`;
             this.cardDisplay.classList.remove('hidden');
         }

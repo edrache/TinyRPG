@@ -154,10 +154,32 @@ li {
     text-transform: capitalize;
 }
 
+#card-image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 10px;
+    border: 1px solid #4a4a4a;
+    display: block;
+}
+
+#card-image.hidden {
+    display: none;
+}
+
+#card-title {
+    margin: 10px 0 5px 0;
+    color: #e0e0e0;
+    font-size: 1.2rem;
+    text-align: center;
+    border-bottom: none;
+    /* Override default h4 border */
+}
+
 #card-text {
     font-style: italic;
     line-height: 1.4;
-    margin: 15px 0;
+    margin: 5px 0 15px 0;
 }
 
 #card-footer {
