@@ -70,6 +70,7 @@ export default class Game {
         // Add overlays
         imagePaths.add('assets/OverlayMultiply.png');
         imagePaths.add('assets/OverlayScreen.png');
+        imagePaths.add('assets/impassable.png');
 
         this.totalImages = imagePaths.size;
 

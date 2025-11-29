@@ -140,9 +140,17 @@ export default class Grid {
                 }
 
                 // Overlay for non-walkable tiles
+                // Overlay for non-walkable tiles
                 if (!tile.hasTag('walkable')) {
-                    ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
-                    ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+                    // Draw impassable image
+                    if (images['assets/impassable.png']) {
+                        ctx.drawImage(images['assets/impassable.png'], screenX, screenY, this.tileSize, this.tileSize);
+                    }
+
+                    // Draw thin border
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(screenX + 0.5, screenY + 0.5, this.tileSize - 1, this.tileSize - 1);
                 }
 
                 // Semi-transparent Fog (Transition Zone)
