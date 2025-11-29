@@ -1,9 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text&family=Pirata+One&display=swap');
+
+:root {
+    --yale-blue: #033f63ff;
+    --stormy-teal: #28666eff;
+    --muted-teal: #7c9885ff;
+    --dry-sage: #b5b682ff;
+    --soft-peach: #fedc97ff;
+}
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #222;
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--yale-blue);
+    color: var(--soft-peach);
+    font-family: 'Crimson Text', serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,34 +23,91 @@ body {
 #game-container {
     display: flex;
     gap: 20px;
-    background-color: #333;
+    background-color: var(--stormy-teal);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--muted-teal);
 }
 
 canvas {
     background-color: #000;
-    border: 1px solid #555;
-    image-rendering: auto;
-    /* Allow smoothing */
+    border: 2px solid var(--muted-teal);
+    border-radius: 4px;
+    image-rendering: pixelated;
+    /* Better for pixel art if that's the style, otherwise auto */
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 #ui-panel {
-    width: 200px;
+    width: 250px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-#tile-info {
-    background-color: #444;
-    padding: 10px;
-    border-radius: 4px;
+#tile-info,
+#player-stats,
+#controls-info {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--muted-teal);
 }
 
-h3 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Pirata One', cursive;
     margin-top: 0;
-    border-bottom: 1px solid #666;
-    padding-bottom: 5px;
+    border-bottom: 2px solid var(--muted-teal);
+    padding-bottom: 8px;
+    color: var(--soft-peach);
+    font-weight: 400;
+    /* Pirata One is already bold/display */
+    letter-spacing: 1px;
+    text-transform: none;
+    /* Let the font shine */
+    font-size: 1.5rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+/* Tag Styling */
+#tile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+}
+
+.tag {
+    color: var(--soft-peach);
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease;
+}
+
+.tag:hover {
+    transform: translateY(-1px);
+}
+
+#controls-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
 }

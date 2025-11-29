@@ -122,9 +122,57 @@ export default class Game {
     updateUI() {
         const currentTile = this.grid.getTile(this.player.x, this.player.y);
         if (currentTile) {
-            this.uiTags.textContent = `Tags: ${currentTile.tags.join(', ')}`;
+            this.uiTags.innerHTML = ''; // Clear previous content
+            currentTile.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                tagElement.style.backgroundColor = this.getTagColor(tag);
+                this.uiTags.appendChild(tagElement);
+            });
+        }
+        this.updateStats();
+    }
+
+    getTagColor(tag) {
+        // Map specific tags to dark, unique colors
+        const colorMap = {
+            'plains': '#2e4a2e',    // Dark Green
+            'forest': '#1a331a',    // Deep Forest Green
+            'mountain': '#4a4a4a',  // Dark Grey
+            'river': '#1a2e4a',     // Dark Blue
+            'village': '#4a332a',   // Dark Brown
+            'swamp': '#333a2a',     // Dark Olive
+            'desert': '#5c4033',    // Dark Ochre
+            'hills': '#3a332a',     // Brownish
+            'lake': '#1a1a33',      // Deep Navy
+            'ruins': '#332a3a',     // Dark Purple
+            'wall': '#1a1a1a',      // Almost Black
+            'walkable': '#2a4a4a',  // Dark Teal
+            'impassable': '#4a1a1a' // Dark Red
+        };
+
+        if (colorMap[tag]) {
+            return colorMap[tag];
         }
 
+        // Generate a consistent dark color for unknown tags
+        let hash = 0;
+        for (let i = 0; i < tag.length; i++) {
+            hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        // Hue: 0-360 based on hash
+        const h = Math.abs(hash % 360);
+        // Saturation: 40-60% (muted)
+        const s = 40 + (Math.abs(hash) % 20);
+        // Lightness: 20-35% (dark)
+        const l = 20 + (Math.abs(hash) % 15);
+
+        return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    updateStats() {
         // Update Stats UI
         const statsList = document.getElementById('stats-list');
         if (statsList) {

@@ -24,7 +24,7 @@ export default class Tile {
             'desert': { color: '#F4A460', walkable: true, image: 'assets/desert_tile_1764359770422.png' },
             'hills': { color: '#CD853F', walkable: true, image: 'assets/plains_tile_1764359683240.png' }, // Placeholder: plains
             'lake': { color: '#000080', walkable: false, image: 'assets/river_tile_1764359723299.png' }, // Placeholder: river
-            'ruins': { color: '#708090', walkable: true, image: 'assets/mountain_tile_1764359710272.png' }, // Placeholder: mountain
+            'ruins': { color: '#708090', walkable: true, image: 'assets/ruins.png' },
             'wall': { color: '#333333', walkable: false, image: null }
         };
         return props[type] || { color: '#FF00FF', walkable: true, image: null }; // Magenta for error
