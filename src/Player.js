@@ -72,7 +72,20 @@ export default class Player {
     }
 
     update(deltaTime) {
-        if (!this.isMoving) return;
+        if (!this.isMoving) {
+            // Idle Animation
+            this.idleTime = (this.idleTime || 0) + deltaTime;
+            const idleSpeed = 0.002;
+            const rotationAmplitude = 0.05; // Radians
+            const scaleAmplitude = 0.05;
+
+            this.rotation = Math.sin(this.idleTime * idleSpeed) * rotationAmplitude;
+            this.scale = 1 + Math.sin(this.idleTime * idleSpeed * 1.5) * scaleAmplitude;
+            return;
+        }
+
+        // Reset idle time when moving
+        this.idleTime = 0;
 
         this.moveProgress += deltaTime / this.moveDuration;
         if (this.moveProgress >= 1) {
@@ -100,14 +113,15 @@ export default class Player {
         const screenY = this.visualY * tileSize;
 
         ctx.save();
-        // Translate to center of player
-        ctx.translate(screenX + tileSize / 2, screenY + tileSize / 2);
+        // Translate to bottom-center of player
+        ctx.translate(screenX + tileSize / 2, screenY + tileSize);
         ctx.rotate(this.rotation);
         ctx.scale(this.scale, this.scale);
 
         if (image) {
-            // Draw centered at (0,0)
-            ctx.drawImage(image, -tileSize / 2, -tileSize / 2, tileSize, tileSize);
+            // Draw relative to bottom-center (0,0)
+            // Image top-left is (-width/2, -height)
+            ctx.drawImage(image, -tileSize / 2, -tileSize, tileSize, tileSize);
         } else {
             // Draw player as a circle or square (Fallback)
             ctx.fillStyle = this.color;
@@ -115,7 +129,7 @@ export default class Player {
             const padding = 4;
             ctx.fillRect(
                 -tileSize / 2 + padding,
-                -tileSize / 2 + padding,
+                -tileSize + padding,
                 tileSize - padding * 2,
                 tileSize - padding * 2
             );
