@@ -1,5 +1,6 @@
 import Grid from './Grid.js';
 import Player from './Player.js';
+import CardManager from './CardManager.js';
 
 export default class Game {
     constructor(canvas) {
@@ -34,6 +35,7 @@ export default class Game {
         }
 
         this.player = new Player(startX, startY, this.grid);
+        this.cardManager = new CardManager();
 
         // Camera Position (Top-Left coordinate in tiles, can be fractional)
         this.camera = {
@@ -46,6 +48,10 @@ export default class Game {
 
         // UI Elements
         this.uiTags = document.getElementById('tile-tags');
+        this.cardDisplay = document.getElementById('card-display');
+        this.cardType = document.getElementById('card-type');
+        this.cardText = document.getElementById('card-text');
+        this.cardsRemaining = document.getElementById('cards-remaining');
 
         // Preload images
         this.images = {};
@@ -128,9 +134,37 @@ export default class Game {
             if (dx !== 0 || dy !== 0) {
                 if (this.player.move(dx, dy)) {
                     this.updateUI();
+                    this.handleCardDraw();
                 }
             }
         });
+    }
+
+    handleCardDraw() {
+        const currentTile = this.grid.getTile(this.player.x, this.player.y);
+        if (currentTile) {
+            const card = this.cardManager.drawCard(currentTile.type);
+            if (card) {
+                this.showCard(card);
+            } else {
+                this.hideCard();
+            }
+        }
+    }
+
+    showCard(card) {
+        if (this.cardDisplay) {
+            this.cardType.textContent = card.type;
+            this.cardText.textContent = card.text;
+            this.cardsRemaining.textContent = `Cards left: ${this.cardManager.getCardsRemaining(card.type)}`;
+            this.cardDisplay.classList.remove('hidden');
+        }
+    }
+
+    hideCard() {
+        if (this.cardDisplay) {
+            this.cardDisplay.classList.add('hidden');
+        }
     }
 
     updateUI() {
