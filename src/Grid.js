@@ -83,12 +83,46 @@ export default class Grid {
         return null; // Out of bounds
     }
 
-    draw(ctx, images) {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
+    draw(ctx, images, camera, player) {
+        // Calculate visible range
+        // Camera x/y are in tile coordinates
+        const startX = Math.floor(Math.max(0, camera.x));
+        const startY = Math.floor(Math.max(0, camera.y));
+
+        // Viewport size in tiles (approximate based on canvas size, passed implicitly or recalculated)
+        // Better to pass viewport size or calculate from canvas context
+        const viewportWidth = Math.ceil(ctx.canvas.width / this.tileSize) + 1;
+        const viewportHeight = Math.ceil(ctx.canvas.height / this.tileSize) + 1;
+
+        const endX = Math.min(this.width, startX + viewportWidth);
+        const endY = Math.min(this.height, startY + viewportHeight);
+
+        // Fog properties
+        const fogProps = Tile.getProperties('fog');
+
+        for (let y = startY; y < endY; y++) {
+            for (let x = startX; x < endX; x++) {
+                // Calculate screen position relative to camera
+                const screenX = (x - camera.x) * this.tileSize;
+                const screenY = (y - camera.y) * this.tileSize;
+
+                // Fog of War Logic
+                const dist = Math.sqrt((x - player.x) ** 2 + (y - player.y) ** 2);
+                const visibilityRadius = player.stats.intelligence; // Radius based on Int
+
+                if (dist > visibilityRadius + 1) {
+                    // Full Fog (completely hidden)
+                    if (fogProps.image && images[fogProps.image]) {
+                        ctx.drawImage(images[fogProps.image], screenX, screenY, this.tileSize, this.tileSize);
+                    } else {
+                        ctx.fillStyle = fogProps.color;
+                        ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+                    }
+                    continue; // Skip drawing the actual tile
+                }
+
+                // Draw the actual tile first
                 const tile = this.tiles[y][x];
-                const screenX = x * this.tileSize;
-                const screenY = y * this.tileSize;
 
                 if (tile.properties.image && images[tile.properties.image]) {
                     ctx.drawImage(images[tile.properties.image], screenX, screenY, this.tileSize, this.tileSize);
@@ -103,6 +137,19 @@ export default class Grid {
                     ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
                     ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
                 }
+
+                // Semi-transparent Fog (Transition Zone)
+                if (dist > visibilityRadius) {
+                    ctx.save();
+                    ctx.globalAlpha = 0.5;
+                    if (fogProps.image && images[fogProps.image]) {
+                        ctx.drawImage(images[fogProps.image], screenX, screenY, this.tileSize, this.tileSize);
+                    } else {
+                        ctx.fillStyle = fogProps.color;
+                        ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+                    }
+                    ctx.restore();
+                }
             }
         }
 
@@ -112,10 +159,10 @@ export default class Grid {
         ctx.strokeStyle = crossColor;
         ctx.lineWidth = 0.5;
 
-        for (let y = 0; y <= this.height; y++) {
-            for (let x = 0; x <= this.width; x++) {
-                const cx = x * this.tileSize;
-                const cy = y * this.tileSize;
+        for (let y = startY; y <= endY; y++) {
+            for (let x = startX; x <= endX; x++) {
+                const cx = (x - camera.x) * this.tileSize;
+                const cy = (y - camera.y) * this.tileSize;
 
                 ctx.beginPath();
                 // Horizontal line

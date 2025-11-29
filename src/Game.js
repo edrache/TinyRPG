@@ -8,25 +8,38 @@ export default class Game {
         this.width = canvas.width;
         this.height = canvas.height;
 
-        this.tileSize = 20;
-        // Calculate grid size based on canvas size
-        const gridWidth = Math.floor(this.width / this.tileSize);
-        const gridHeight = Math.floor(this.height / this.tileSize);
+        this.tileSize = 64; // Adjusted for better visibility
 
-        this.grid = new Grid(gridWidth, gridHeight, this.tileSize);
+        // Map Dimensions (World Size)
+        this.mapWidth = 50;
+        this.mapHeight = 50;
+
+        // Viewport Dimensions (in tiles)
+        this.viewportWidth = Math.ceil(this.width / this.tileSize);
+        this.viewportHeight = Math.ceil(this.height / this.tileSize);
+
+        this.grid = new Grid(this.mapWidth, this.mapHeight, this.tileSize);
 
         // Find a valid starting position for the player
-        let startX = 1;
-        let startY = 1;
+        let startX = Math.floor(this.mapWidth / 2);
+        let startY = Math.floor(this.mapHeight / 2);
+
+        // Ensure start is valid
         while (this.grid.getTile(startX, startY).hasTag('impassable')) {
             startX++;
-            if (startX >= gridWidth - 1) {
+            if (startX >= this.mapWidth - 1) {
                 startX = 1;
                 startY++;
             }
         }
 
         this.player = new Player(startX, startY, this.grid);
+
+        // Camera Position (Top-Left coordinate in tiles, can be fractional)
+        this.camera = {
+            x: 0,
+            y: 0
+        };
 
         this.lastTime = 0;
         this.setupInput();
@@ -42,11 +55,11 @@ export default class Game {
     }
 
     preloadImages() {
-        const types = ['plains', 'forest', 'mountain', 'river', 'village', 'swamp', 'desert', 'hills', 'lake', 'ruins'];
+        const types = ['plains', 'forest', 'mountain', 'river', 'village', 'swamp', 'desert', 'hills', 'lake', 'ruins', 'border'];
         // Get unique image paths
         const imagePaths = new Set();
         types.forEach(type => {
-            const props = this.grid.tiles[0][0].constructor.getProperties(type); // Access static method via instance or class if imported
+            const props = this.grid.tiles[0][0].constructor.getProperties(type);
             if (props.image) {
                 imagePaths.add(props.image);
             }
@@ -204,6 +217,29 @@ export default class Game {
     update(deltaTime) {
         // Game logic updates (animations, etc.)
         this.player.update(deltaTime);
+        this.updateCamera();
+    }
+
+    updateCamera() {
+        // Center camera on player
+        // We want the player to be in the middle of the viewport
+        // Camera x/y is the top-left corner of the viewport in tile coordinates
+
+        // Use visual coordinates for smooth tracking
+        const targetX = this.player.visualX - this.viewportWidth / 2;
+        const targetY = this.player.visualY - this.viewportHeight / 2;
+
+        // Smooth camera movement using Lerp
+        const lerpFactor = 0.1;
+        this.camera.x += (targetX - this.camera.x) * lerpFactor;
+        this.camera.y += (targetY - this.camera.y) * lerpFactor;
+
+        // Clamp camera to map bounds
+        // The camera should not show outside (0,0) to (mapWidth, mapHeight)
+        // But since we want to show the border, we clamp so the viewport stays within map
+
+        this.camera.x = Math.max(0, Math.min(this.camera.x, this.mapWidth - this.viewportWidth));
+        this.camera.y = Math.max(0, Math.min(this.camera.y, this.mapHeight - this.viewportHeight));
     }
 
     draw() {
@@ -211,27 +247,33 @@ export default class Game {
         this.ctx.fillStyle = '#000';
         this.ctx.fillRect(0, 0, this.width, this.height);
 
-        // Draw grid
-        this.grid.draw(this.ctx, this.images);
+        // Draw grid with camera offset and player for FoW
+        this.grid.draw(this.ctx, this.images, this.camera, this.player);
 
-        // Draw player
-        this.player.draw(this.ctx, this.tileSize, this.images['assets/hero.png']);
+        // Draw player with camera offset
+        this.player.draw(this.ctx, this.tileSize, this.images['assets/hero.png'], this.camera);
 
         // Draw Overlays
         this.ctx.save();
+
+        // Translate context so patterns are anchored to the map, not the screen
+        const camX = this.camera.x * this.tileSize;
+        const camY = this.camera.y * this.tileSize;
+        this.ctx.translate(-camX, -camY);
 
         // Multiply Layer
         if (this.multiplyPattern) {
             this.ctx.globalCompositeOperation = 'multiply';
             this.ctx.fillStyle = this.multiplyPattern;
-            this.ctx.fillRect(0, 0, this.width, this.height);
+            // Draw rect covering the visible area (which is now at camX, camY in this coordinate system)
+            this.ctx.fillRect(camX, camY, this.width, this.height);
         }
 
         // Screen Layer
         if (this.screenPattern) {
             this.ctx.globalCompositeOperation = 'screen';
             this.ctx.fillStyle = this.screenPattern;
-            this.ctx.fillRect(0, 0, this.width, this.height);
+            this.ctx.fillRect(camX, camY, this.width, this.height);
         }
 
         this.ctx.restore();

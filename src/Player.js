@@ -108,9 +108,9 @@ export default class Player {
         }
     }
 
-    draw(ctx, tileSize, image) {
-        const screenX = this.visualX * tileSize;
-        const screenY = this.visualY * tileSize;
+    draw(ctx, tileSize, image, camera) {
+        const screenX = (this.visualX - camera.x) * tileSize;
+        const screenY = (this.visualY - camera.y) * tileSize;
 
         ctx.save();
         // Translate to bottom-center of player
