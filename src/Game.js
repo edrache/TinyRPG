@@ -191,10 +191,10 @@ export default class Game {
         const statsList = document.getElementById('stats-list');
         if (statsList) {
             statsList.innerHTML = `
-                <li>Strength: ${this.player.stats.strength}</li>
-                <li>Agility: ${this.player.stats.agility}</li>
-                <li>Intelligence: ${this.player.stats.intelligence}</li>
-                <li>Charisma: ${this.player.stats.charisma}</li>
+                <li><span class="stat-label">Strength:</span> <span class="stat-value">${this.player.stats.strength}</span></li>
+                <li><span class="stat-label">Agility:</span> <span class="stat-value">${this.player.stats.agility}</span></li>
+                <li><span class="stat-label">Intelligence:</span> <span class="stat-value">${this.player.stats.intelligence}</span></li>
+                <li><span class="stat-label">Charisma:</span> <span class="stat-value">${this.player.stats.charisma}</span></li>
             `;
         }
     }

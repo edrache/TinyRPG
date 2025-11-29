@@ -27,7 +27,7 @@ export default class Tile {
             'ruins': { color: '#708090', walkable: true, image: 'assets/ruins.png' },
             'wall': { color: '#333333', walkable: false, image: null },
             'border': { color: '#111111', walkable: false, image: null },
-            'fog': { color: '#050505', walkable: false, image: 'assets/fog.png' }
+            'fog': { color: '#ebe4d0ff', walkable: false, image: 'assets/fog.png' }
         };
         return props[type] || { color: '#FF00FF', walkable: true, image: null }; // Magenta for error
     }

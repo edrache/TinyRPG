@@ -106,24 +106,31 @@ export default class Grid {
                 const screenX = (x - camera.x) * this.tileSize;
                 const screenY = (y - camera.y) * this.tileSize;
 
+                const tile = this.tiles[y][x];
+                const isBorder = tile.type === 'border';
+
                 // Fog of War Logic
                 const dist = Math.sqrt((x - player.x) ** 2 + (y - player.y) ** 2);
                 const visibilityRadius = player.stats.intelligence; // Radius based on Int
 
-                if (dist > visibilityRadius + 1) {
+                // Calculate Fog Dimensions (105% size for overlap)
+                const fogSize = this.tileSize * 1.05;
+                const fogOffset = (fogSize - this.tileSize) / 2;
+                const fogX = screenX - fogOffset;
+                const fogY = screenY - fogOffset;
+
+                if (!isBorder && dist > visibilityRadius + 1) {
                     // Full Fog (completely hidden)
                     if (fogProps.image && images[fogProps.image]) {
-                        ctx.drawImage(images[fogProps.image], screenX, screenY, this.tileSize, this.tileSize);
+                        ctx.drawImage(images[fogProps.image], fogX, fogY, fogSize, fogSize);
                     } else {
                         ctx.fillStyle = fogProps.color;
-                        ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+                        ctx.fillRect(fogX, fogY, fogSize, fogSize);
                     }
                     continue; // Skip drawing the actual tile
                 }
 
                 // Draw the actual tile first
-                const tile = this.tiles[y][x];
-
                 if (tile.properties.image && images[tile.properties.image]) {
                     ctx.drawImage(images[tile.properties.image], screenX, screenY, this.tileSize, this.tileSize);
                 } else {
@@ -139,14 +146,14 @@ export default class Grid {
                 }
 
                 // Semi-transparent Fog (Transition Zone)
-                if (dist > visibilityRadius) {
+                if (!isBorder && dist > visibilityRadius) {
                     ctx.save();
                     ctx.globalAlpha = 0.5;
                     if (fogProps.image && images[fogProps.image]) {
-                        ctx.drawImage(images[fogProps.image], screenX, screenY, this.tileSize, this.tileSize);
+                        ctx.drawImage(images[fogProps.image], fogX, fogY, fogSize, fogSize);
                     } else {
                         ctx.fillStyle = fogProps.color;
-                        ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+                        ctx.fillRect(fogX, fogY, fogSize, fogSize);
                     }
                     ctx.restore();
                 }

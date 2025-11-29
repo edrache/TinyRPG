@@ -82,6 +82,15 @@ ul {
 li {
     margin-bottom: 5px;
     font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-value {
+    font-family: 'Pirata One', cursive;
+    font-size: 1.2rem;
+    color: var(--soft-peach);
 }
 
 /* Tag Styling */
