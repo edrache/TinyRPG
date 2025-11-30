@@ -314,3 +314,33 @@ li {
     text-shadow: 1px 1px 1px #000;
     white-space: nowrap;
 }
+
+/* Card Actions */
+#card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-btn {
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    border: 1px solid #666;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Crimson Text', serif;
+    font-size: 1rem;
+    transition: background-color 0.2s, transform 0.1s;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background-color: #5a5a5a;
+    transform: translateY(-1px);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}

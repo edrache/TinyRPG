@@ -44,6 +44,7 @@ export default class Game {
         };
 
         this.lastTime = 0;
+        this.isCardActive = false;
         this.setupInput();
 
         // UI Elements
@@ -52,6 +53,7 @@ export default class Game {
         this.cardType = document.getElementById('card-type');
         this.cardImage = document.getElementById('card-image');
         this.cardText = document.getElementById('card-text');
+        this.cardActions = document.getElementById('card-actions');
         this.cardsRemaining = document.getElementById('cards-remaining');
 
         // Preload images
@@ -207,6 +209,8 @@ export default class Game {
 
     setupInput() {
         window.addEventListener('keydown', (e) => {
+            if (this.isCardActive) return; // Block movement if card is active
+
             let dx = 0;
             let dy = 0;
 
@@ -256,8 +260,11 @@ export default class Game {
 
     showCard(card) {
         if (this.cardDisplay) {
+            this.isCardActive = true; // Block movement
+
             // Clear previous content
             this.cardType.innerHTML = '';
+            this.cardActions.innerHTML = ''; // Clear previous actions
 
             const tagSpan = document.createElement('span');
             tagSpan.className = 'tag';
@@ -279,14 +286,59 @@ export default class Game {
                 this.cardImage.classList.add('hidden');
             }
 
+            // Render Actions
+            if (card.actions && card.actions.length > 0) {
+                card.actions.forEach(action => {
+                    const btn = document.createElement('button');
+                    btn.className = 'action-btn';
+                    btn.textContent = action.label;
+                    btn.onclick = () => this.handleCardAction(action);
+                    this.cardActions.appendChild(btn);
+                });
+            } else {
+                // Fallback if no actions (shouldn't happen with new data, but safe)
+                const btn = document.createElement('button');
+                btn.className = 'action-btn';
+                btn.textContent = 'Continue';
+                btn.onclick = () => this.handleCardAction(null);
+                this.cardActions.appendChild(btn);
+            }
+
             this.cardsRemaining.textContent = `Cards left: ${this.cardManager.getCardsRemaining(card.type)}`;
             this.cardDisplay.classList.remove('hidden');
         }
     }
 
+    handleCardAction(action) {
+        if (action && action.effects) {
+            if (action.effects.physicalFatigue) {
+                this.player.stats.physicalFatigue.current += action.effects.physicalFatigue;
+                // Clamp
+                this.player.stats.physicalFatigue.current = Math.min(
+                    this.player.stats.physicalFatigue.current,
+                    this.player.stats.physicalFatigue.max
+                );
+                this.player.stats.physicalFatigue.current = Math.max(0, this.player.stats.physicalFatigue.current);
+            }
+            if (action.effects.mentalFatigue) {
+                this.player.stats.mentalFatigue.current += action.effects.mentalFatigue;
+                // Clamp
+                this.player.stats.mentalFatigue.current = Math.min(
+                    this.player.stats.mentalFatigue.current,
+                    this.player.stats.mentalFatigue.max
+                );
+                this.player.stats.mentalFatigue.current = Math.max(0, this.player.stats.mentalFatigue.current);
+            }
+        }
+
+        this.updateStats();
+        this.hideCard();
+    }
+
     hideCard() {
         if (this.cardDisplay) {
             this.cardDisplay.classList.add('hidden');
+            this.isCardActive = false;
         }
     }
 
@@ -349,10 +401,10 @@ export default class Game {
         const statsList = document.getElementById('stats-list');
         if (statsList) {
             statsList.innerHTML = `
-                <li><span class="stat-label">Strength:</span> <span class="stat-value">${this.player.stats.strength}</span></li>
-                <li><span class="stat-label">Agility:</span> <span class="stat-value">${this.player.stats.agility}</span></li>
-                <li><span class="stat-label">Intelligence:</span> <span class="stat-value">${this.player.stats.intelligence}</span></li>
-                <li><span class="stat-label">Charisma:</span> <span class="stat-value">${this.player.stats.charisma}</span></li>
+                <li><span class="stat-label">💪 Strength:</span> <span class="stat-value">${this.player.stats.strength}</span></li>
+                <li><span class="stat-label">🏃 Agility:</span> <span class="stat-value">${this.player.stats.agility}</span></li>
+                <li><span class="stat-label">🧠 Intelligence:</span> <span class="stat-value">${this.player.stats.intelligence}</span></li>
+                <li><span class="stat-label">🗣️ Charisma:</span> <span class="stat-value">${this.player.stats.charisma}</span></li>
             `;
         }
 
