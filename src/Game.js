@@ -58,7 +58,79 @@ export default class Game {
         this.images = {};
         this.imagesLoaded = 0;
         this.totalImages = 0;
+        this.totalImages = 0;
         this.preloadImages();
+        this.setupDraggableCard();
+        this.setupMinimization();
+    }
+
+    setupMinimization() {
+        const minimizeBtn = document.getElementById('minimize-btn');
+        if (minimizeBtn) {
+            minimizeBtn.addEventListener('click', () => {
+                this.cardDisplay.classList.toggle('minimized');
+                if (this.cardDisplay.classList.contains('minimized')) {
+                    minimizeBtn.textContent = '+';
+                } else {
+                    minimizeBtn.textContent = '−';
+                }
+            });
+        }
+    }
+
+    setupDraggableCard() {
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        const cardHeader = document.getElementById('card-header');
+
+        const dragStart = (e) => {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            // Only allow dragging from the header
+            if (e.target === cardHeader || cardHeader.contains(e.target)) {
+                // Prevent dragging if clicking the minimize button
+                if (e.target.id !== 'minimize-btn') {
+                    isDragging = true;
+                }
+            }
+        };
+
+        const dragEnd = (e) => {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        };
+
+        const drag = (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, this.cardDisplay);
+            }
+        };
+
+        const setTranslate = (xPos, yPos, el) => {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+        };
+
+        // Attach listeners
+        if (cardHeader) {
+            cardHeader.addEventListener("mousedown", dragStart);
+            window.addEventListener("mouseup", dragEnd);
+            window.addEventListener("mousemove", drag);
+        }
     }
 
     preloadImages() {

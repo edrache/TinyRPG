@@ -122,22 +122,22 @@ li {
 }
 
 /* Card Display Styles */
+/* Card Display Styles */
 #card-display {
     position: absolute;
     top: 20px;
     right: 320px;
-    /* Positioned to the left of the UI panel */
     width: 250px;
     background-color: rgba(20, 20, 20, 0.95);
     border: 2px solid #4a4a4a;
     border-radius: 8px;
-    padding: 15px;
     color: #e0e0e0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     transition: opacity 0.3s ease-in-out;
-    pointer-events: none;
-    /* Let clicks pass through if needed, though it's an overlay */
+    pointer-events: auto;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
 }
 
 #card-display.hidden {
@@ -145,13 +145,69 @@ li {
     pointer-events: none;
 }
 
+#card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid #4a4a4a;
+    cursor: move;
+    /* Drag handle */
+    border-radius: 6px 6px 0 0;
+}
+
+#card-title {
+    margin: 0;
+    color: #e0e0e0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+}
+
+#minimize-btn {
+    background: none;
+    border: none;
+    color: #ffd700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+#minimize-btn:hover {
+    color: #fff;
+}
+
+#card-body {
+    padding: 15px;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out;
+    max-height: 500px;
+    /* Arbitrary large value */
+    opacity: 1;
+    overflow: hidden;
+}
+
+#card-display.minimized #card-body {
+    max-height: 0;
+    opacity: 0;
+    padding: 0 15px;
+    /* Keep horizontal padding to avoid jumpiness, remove vertical */
+    border-top: none;
+}
+
+#card-display.minimized {
+    border-bottom: 2px solid #4a4a4a;
+    /* Ensure border is visible when minimized */
+}
+
 #card-content h3 {
     margin-top: 0;
     color: #ffd700;
-    /* Gold color for title */
     border-bottom: 1px solid #4a4a4a;
     padding-bottom: 5px;
     text-transform: capitalize;
+    font-size: 1rem;
 }
 
 #card-image {
@@ -167,19 +223,11 @@ li {
     display: none;
 }
 
-#card-title {
-    margin: 10px 0 5px 0;
-    color: #e0e0e0;
-    font-size: 1.2rem;
-    text-align: center;
-    border-bottom: none;
-    /* Override default h4 border */
-}
-
 #card-text {
     font-style: italic;
     line-height: 1.4;
-    margin: 5px 0 15px 0;
+    margin: 10px 0;
+    font-size: 0.9rem;
 }
 
 #card-footer {
