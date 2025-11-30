@@ -21,7 +21,7 @@ export default class CardManager {
 
     generateCardsForType(type) {
         // Deep copy the cards from CardData to avoid modifying the original data
-        const cards = CardData[type].map(card => ({ ...card }));
+        const cards = CardData[type].map(card => ({ ...card, type }));
         return cards;
     }
 

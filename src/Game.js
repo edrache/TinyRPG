@@ -62,6 +62,35 @@ export default class Game {
         this.preloadImages();
         this.setupDraggableCard();
         this.setupMinimization();
+        this.setupImageTooltip();
+    }
+
+    setupImageTooltip() {
+        const cardImage = document.getElementById('card-image');
+        const tooltip = document.getElementById('image-zoom-tooltip');
+        const zoomedImage = document.getElementById('zoomed-image');
+
+        if (cardImage && tooltip && zoomedImage) {
+            cardImage.addEventListener('mouseenter', () => {
+                if (cardImage.src && !cardImage.classList.contains('hidden')) {
+                    zoomedImage.src = cardImage.src;
+                    tooltip.classList.remove('hidden');
+                }
+            });
+
+            cardImage.addEventListener('mousemove', (e) => {
+                if (!tooltip.classList.contains('hidden')) {
+                    const offset = 20;
+                    // Keep tooltip within window bounds logic could be added here
+                    tooltip.style.left = `${e.clientX + offset}px`;
+                    tooltip.style.top = `${e.clientY + offset}px`;
+                }
+            });
+
+            cardImage.addEventListener('mouseleave', () => {
+                tooltip.classList.add('hidden');
+            });
+        }
     }
 
     setupMinimization() {
@@ -227,7 +256,15 @@ export default class Game {
 
     showCard(card) {
         if (this.cardDisplay) {
-            this.cardType.textContent = card.type;
+            // Clear previous content
+            this.cardType.innerHTML = '';
+
+            const tagSpan = document.createElement('span');
+            tagSpan.className = 'tag';
+            tagSpan.textContent = card.type;
+            tagSpan.style.backgroundColor = this.getTagColor(card.type);
+            this.cardType.appendChild(tagSpan);
+
             this.cardText.textContent = card.text;
 
             const cardTitle = document.getElementById('card-title');
