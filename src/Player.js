@@ -36,11 +36,24 @@ export default class Player {
             }
         }
 
+        const strength = stats[0];
+        const agility = stats[1];
+        const intelligence = stats[2];
+        const charisma = stats[3];
+
         return {
-            strength: stats[0],
-            agility: stats[1],
-            intelligence: stats[2],
-            charisma: stats[3]
+            strength,
+            agility,
+            intelligence,
+            charisma,
+            physicalFatigue: {
+                current: 10 * (strength + agility),
+                max: 10 * (strength + agility)
+            },
+            mentalFatigue: {
+                current: 10 * (intelligence + charisma),
+                max: 10 * (intelligence + charisma)
+            }
         };
     }
 

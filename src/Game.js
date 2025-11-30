@@ -355,6 +355,27 @@ export default class Game {
                 <li><span class="stat-label">Charisma:</span> <span class="stat-value">${this.player.stats.charisma}</span></li>
             `;
         }
+
+        // Update Fatigue Bars
+        const physicalBar = document.getElementById('physical-fatigue-bar');
+        const physicalText = document.getElementById('physical-fatigue-text');
+        if (physicalBar && physicalText) {
+            const current = this.player.stats.physicalFatigue.current;
+            const max = this.player.stats.physicalFatigue.max;
+            const percentage = Math.max(0, Math.min(100, (current / max) * 100));
+            physicalBar.style.width = `${percentage}%`;
+            physicalText.textContent = `${current}/${max}`;
+        }
+
+        const mentalBar = document.getElementById('mental-fatigue-bar');
+        const mentalText = document.getElementById('mental-fatigue-text');
+        if (mentalBar && mentalText) {
+            const current = this.player.stats.mentalFatigue.current;
+            const max = this.player.stats.mentalFatigue.max;
+            const percentage = Math.max(0, Math.min(100, (current / max) * 100));
+            mentalBar.style.width = `${percentage}%`;
+            mentalText.textContent = `${current}/${max}`;
+        }
     }
 
     start() {
