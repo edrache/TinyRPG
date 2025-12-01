@@ -260,8 +260,6 @@ export default class Game {
 
     showCard(card) {
         if (this.cardDisplay) {
-            this.isCardActive = true; // Block movement
-
             // Clear previous content
             this.cardType.innerHTML = '';
             this.cardActions.innerHTML = ''; // Clear previous actions
@@ -287,21 +285,32 @@ export default class Game {
             }
 
             // Render Actions
-            if (card.actions && card.actions.length > 0) {
-                card.actions.forEach(action => {
+            // 33% chance to have an encounter
+            const hasEncounter = Math.random() < 0.33;
+
+            if (hasEncounter) {
+                this.isCardActive = true; // Block movement only if there is an encounter
+
+                if (card.actions && card.actions.length > 0) {
+                    card.actions.forEach(action => {
+                        const btn = document.createElement('button');
+                        btn.className = 'action-btn';
+                        btn.textContent = action.label;
+                        btn.onclick = () => this.handleCardAction(action);
+                        this.cardActions.appendChild(btn);
+                    });
+                } else {
+                    // Fallback if no actions
                     const btn = document.createElement('button');
                     btn.className = 'action-btn';
-                    btn.textContent = action.label;
-                    btn.onclick = () => this.handleCardAction(action);
+                    btn.textContent = 'Continue';
+                    btn.onclick = () => this.handleCardAction(null);
                     this.cardActions.appendChild(btn);
-                });
+                }
             } else {
-                // Fallback if no actions (shouldn't happen with new data, but safe)
-                const btn = document.createElement('button');
-                btn.className = 'action-btn';
-                btn.textContent = 'Continue';
-                btn.onclick = () => this.handleCardAction(null);
-                this.cardActions.appendChild(btn);
+                this.isCardActive = false; // Allow movement
+                // Optional: Add a visual indicator that it's safe to move?
+                // For now, just no buttons.
             }
 
             this.cardsRemaining.textContent = `Cards left: ${this.cardManager.getCardsRemaining(card.type)}`;
