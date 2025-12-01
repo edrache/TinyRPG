@@ -65,6 +65,19 @@ export default class Game {
         this.setupDraggableCard();
         this.setupMinimization();
         this.setupImageTooltip();
+        this.setupDebugControls();
+
+        this.fowEnabled = true;
+    }
+
+    setupDebugControls() {
+        const fowToggle = document.getElementById('fow-toggle');
+        if (fowToggle) {
+            fowToggle.addEventListener('click', () => {
+                this.fowEnabled = !this.fowEnabled;
+                this.draw(); // Redraw immediately
+            });
+        }
     }
 
     setupImageTooltip() {
@@ -488,7 +501,7 @@ export default class Game {
         this.ctx.fillRect(0, 0, this.width, this.height);
 
         // Draw grid with camera offset and player for FoW
-        this.grid.draw(this.ctx, this.images, this.camera, this.player);
+        this.grid.draw(this.ctx, this.images, this.camera, this.player, this.fowEnabled);
 
         // Draw player with camera offset
         this.player.draw(this.ctx, this.tileSize, this.images['assets/hero.png'], this.camera);

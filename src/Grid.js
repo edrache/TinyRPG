@@ -83,7 +83,7 @@ export default class Grid {
         return null; // Out of bounds
     }
 
-    draw(ctx, images, camera, player) {
+    draw(ctx, images, camera, player, fowEnabled = true) {
         // Calculate visible range
         // Camera x/y are in tile coordinates
         const startX = Math.floor(Math.max(0, camera.x));
@@ -119,7 +119,7 @@ export default class Grid {
                 const fogX = screenX - fogOffset;
                 const fogY = screenY - fogOffset;
 
-                if (!isBorder && dist > visibilityRadius + 1) {
+                if (fowEnabled && !isBorder && dist > visibilityRadius + 1) {
                     // Full Fog (completely hidden)
                     if (fogProps.image && images[fogProps.image]) {
                         ctx.drawImage(images[fogProps.image], fogX, fogY, fogSize, fogSize);
@@ -154,7 +154,7 @@ export default class Grid {
                 }
 
                 // Semi-transparent Fog (Transition Zone)
-                if (!isBorder && dist > visibilityRadius) {
+                if (fowEnabled && !isBorder && dist > visibilityRadius) {
                     ctx.save();
                     ctx.globalAlpha = 0.5;
                     if (fogProps.image && images[fogProps.image]) {

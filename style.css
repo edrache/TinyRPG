@@ -344,3 +344,27 @@ li {
 .action-btn:active {
     transform: translateY(0);
 }
+
+/* Debug Panel */
+#debug-panel {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 100;
+}
+
+#fow-toggle {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Crimson Text', serif;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+#fow-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
